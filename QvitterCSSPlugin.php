@@ -25,10 +25,10 @@ class QvitterCSSPlugin extends Plugin {
 		} catch(Exception $e){
 			return true;
 		}
-		if($user === null || user == ""){
+		if($user === null || $user == ""){
 			return true;
 		}
-		$default = Profile_prefs::getData($user->getProfile(), 'stitchxd', 'qvittertheme');
+		$default = $user->getPref('stitchxd', 'qvittertheme', "default.css");
 		$dir = realpath(dirname(__FILE__)."/css/");
 		if(!file_exists($dir."/$default")){
 			$default = "default.css"; //Also make sure the theme exists first :3
@@ -37,10 +37,11 @@ class QvitterCSSPlugin extends Plugin {
 			return true;
 		} else {
 			$styles = file_get_contents($dir."/$default");
+			print "<style>";
+			print $styles;
+			print "</style>";
 		}
-		print "<style>";
-		print $styles;
-		print "</style>";
+		
 		//$action->style($styles);
 		return true;
 	}
