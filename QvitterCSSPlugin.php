@@ -5,6 +5,24 @@ class QvitterCSSPlugin extends Plugin {
     {
     	return true;
     }
+    static function settings($setting)
+	{
+		$settings['default'] = null; 
+		$configphpsettings = common_config('site','qvittercss') ?: array();
+		foreach($configphpsettings as $configphpsetting=>$value) {
+			$settings[$configphpsetting] = $value;
+		}
+
+        // set linkify setting
+        common_config_set('linkify', 'bare_domains', $settings['linkify_bare_domains']);
+
+		if(isset($settings[$setting])) {
+			return $settings[$setting];
+		}
+		else {
+			return false;
+		}
+	}
     public function onPluginVersion(array &$versions)
     {
         $versions[] = array('name' => 'QvitterCSS',
@@ -19,30 +37,26 @@ class QvitterCSSPlugin extends Plugin {
 	{
 		$profile = $action->getScoped();
 		$styles = "";
-		$user;
-		try{
-			$user = common_current_user();
-		} catch(Exception $e){
-			return true;
-		}
-		if($user === null || $user == ""){
-			return true;
-		}
-		$default = $user->getPref('stitchxd', 'qvittertheme', "default.css");
-		$dir = realpath(dirname(__FILE__)."/css/");
-		if(!file_exists($dir."/$default")){
-			$default = "default.css"; //Also make sure the theme exists first :3
-		}
-		if($default == "default.css"){
-			return true;
+		$user; //user object
+		$default = "default.css"; //Blank css to use qvitter's default styles
+		$user = common_current_user();
+		if($user === null || $user === ""){
+			//User is not logged in. Let's try for admin config, or Qvitter default.
+			if(self::settings('default') !== null){
+				$default = self::settings('default');
+			}
 		} else {
+			//User is logged in - so let's try their theme instead.
+			$default = $user->getPref('stitchxd', 'qvittertheme', "default.css");
+				
+		}
+		$dir = realpath(dirname(__FILE__)."/css/");
+		if(file_exists($dir."/$default") && $default !== "default.css"){
 			$styles = file_get_contents($dir."/$default");
 			print "<style>";
 			print $styles;
 			print "</style>";
 		}
-		
-		//$action->style($styles);
 		return true;
 	}
 	public function onRouterInitialized(URLMapper $m)
