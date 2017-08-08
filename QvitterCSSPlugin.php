@@ -19,7 +19,15 @@ class QvitterCSSPlugin extends Plugin {
 	{
 		$profile = $action->getScoped();
 		$styles = "";
-		$user = common_current_user();
+		$user;
+		try{
+			$user = common_current_user();
+		} catch(Exception $e){
+			return true;
+		}
+		if($user === null || user == ""){
+			return true;
+		}
 		$default = Profile_prefs::getData($user->getProfile(), 'stitchxd', 'qvittertheme');
 		$dir = realpath(dirname(__FILE__)."/css/");
 		if(!file_exists($dir."/$default")){
