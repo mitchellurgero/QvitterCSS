@@ -13,9 +13,6 @@ class QvitterCSSPlugin extends Plugin {
 			$settings[$configphpsetting] = $value;
 		}
 
-        // set linkify setting
-        common_config_set('linkify', 'bare_domains', $settings['linkify_bare_domains']);
-
 		if(isset($settings[$setting])) {
 			return $settings[$setting];
 		}
